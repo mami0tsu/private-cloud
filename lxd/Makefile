@@ -1,26 +1,34 @@
-profile_name := vm
-profile := profile.yaml
-user-data := cloud-init.yaml
-cpu := 2 # Number of vCPUs
-memory := 4GiB # Memory size
-
-instance_name := sandbox
-instance_image := ubuntu:jammy
-
+# general
 install-lxd:
 	sudo apt update
 	sudo snap install lxd --channel=5.0/stable
 
-create-profile:
+# desktop
+create-desktop-profile:
 	chmod +x ./create-profile.sh && \
-	./create-profile.sh $(profile_name) $(profile) $(user-data) $(cpu) $(memory)
+	./create-profile.sh desktop profile.yaml cloud-init.desktop.yaml 4 8GiB
 
-delete-profile:
-	lxc profile delete $(profile_name)
+delete-desktop-profile:
+	lxc profile delete desktop
+
+launch-desktop:
+	lxc launch ubuntu:jammy desktop --vm -p desktop
+
+destroy-desktop:
+	lxc stop desktop && \
+	lxc delete desktop
+
+# sandbox
+create-sandbox-profile:
+	chmod +x ./create-profile.sh && \
+	./create-profile.sh sandbox profile.yaml cloud-init.sandbox.yaml 2 8GiB
+
+delete-sandbox-profile:
+	lxc profile delete sandbox
 
 launch-sandbox:
-	lxc launch $(instance_image) $(instance_name) --vm -p $(profile_name)
+	lxc launch ubuntu:jammy sandbox --vm -p sandbox
 
 destroy-sandbox:
-	lxc stop $(instance_name) && \
-	lxc delete $(instance_name)
+	lxc stop sandbox && \
+	lxc delete sandbox

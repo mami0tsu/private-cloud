@@ -1,0 +1,28 @@
+#cloud-config
+# init stage
+users:
+  - name: ubuntu
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: true
+    ssh_import_id:
+      - gh:mami0tsu
+# config stage
+timezone: Asia/Tokyo
+runcmd:
+# final stage
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
+packages:
+  - ubuntu-desktop
+  - xrdp
+power_state:
+  mode: reboot
+  message: Restarting after initializing instance
+final_message: |
+  cloud-init has finished
+  version: $version
+  timestamp: $timestamp
+  datasource: $datasource
+  uptime: $uptime
